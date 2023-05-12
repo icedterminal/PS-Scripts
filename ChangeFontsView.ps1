@@ -3,7 +3,7 @@
 Change Fonts View
 
 .DESCRIPTION
-v1.0.2
+v1.0.3
 Changes Windows Font folder to and from the default bundled and generic views.
 
 .LINK
@@ -47,7 +47,7 @@ Function Menu {
                         # First make sure the <desktop.ini> file even exists. Just in case someone has removed it.
                         if (Test-Path -Path "C:\Windows\Fonts\desktop.ini" -PathType Leaf | Select-String -Pattern 'True' -CaseSensitive -SimpleMatch) {
                             # Explorer must be stopped to prevent issues.
-                            stop-process -Name "explorer"
+                            taskkill /f /im explorer.exe
                             Set-Location "C:\Windows\Fonts"
                             # Remove hidden system attrib for permission reasons
                             attrib -s -h desktop.ini
@@ -68,7 +68,7 @@ Function Menu {
                         # One with the generic view the user has asked for, and the default view for restoring to later.
                         else {
                             # Explorer must be stopped to prevent issues.
-                            stop-process -Name "explorer"
+                            taskkill /f /im explorer.exe
                             Set-Location "C:\Windows\Fonts"
                             # Create a new one with custom view
                             New-Item -Name "desktop.ini" -ItemType "file"
@@ -87,7 +87,7 @@ Function Menu {
                         # First make sure the <desktop.ini.bak> file even exists. Just in case someone has removed it.
                         if (Test-Path -Path "C:\Windows\Fonts\desktop.ini.bak" -PathType Leaf | Select-String -Pattern 'True' -CaseSensitive -SimpleMatch) {
                             # Explorer must be stopped to prevent issues.
-                            stop-process -Name "explorer"
+                            taskkill /f /im explorer.exe
                             Set-Location "C:\Windows\Fonts"
                             # Remove hidden system attrib for permission reasons
                             attrib -s -h desktop.ini
@@ -106,7 +106,7 @@ Function Menu {
                         # In case someone has removed or doesn't have the <desktop.ini.bak>, let's just create an original.
                         else {
                             # Explorer must be stopped to prevent issues.
-                            stop-process -Name "explorer"
+                            taskkill /f /im explorer.exe
                             Set-Location "C:\Windows\Fonts"
                             # Create a new one with default view
                             New-Item -Name "desktop.ini" -ItemType "file"
