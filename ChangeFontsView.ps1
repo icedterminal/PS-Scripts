@@ -4,7 +4,7 @@ Change Fonts View
 
 .DESCRIPTION
 v1.0.1
-Changes Windows Font folder to and from the defaiult bundled and generic views.
+Changes Windows Font folder to and from the default bundled and generic views.
 
 .LINK
 https://github.com/icedterminal/PS-Scripts
@@ -57,7 +57,7 @@ Function Menu {
                             Remove-Item "desktop.ini"
                             # Create a new one with custom view
                             New-Item -Name "desktop.ini" -ItemType "file"
-                            Add-Content "desktop.ini" -Value "[ViewState]`nFolderType=Generic"
+                            Set-Content "desktop.ini" -Value "[ViewState]`nFolderType=Generic"
                             # Add hidden system attrib for permission reasons
                             attrib +s +h desktop.ini
                             attrib +s +h desktop.ini.bak
@@ -72,10 +72,10 @@ Function Menu {
                             Set-Location "C:\Windows\Fonts"
                             # Create a new one with custom view
                             New-Item -Name "desktop.ini" -ItemType "file"
-                            Add-Content "desktop.ini" -Value "[ViewState]`nFolderType=Generic"
+                            Set-Content "desktop.ini" -Value "[ViewState]`nFolderType=Generic"
                             # Create a new backup one with default view
                             New-Item -Name "desktop.ini.bak" -ItemType "file"
-                            Add-Content "desktop.ini.bak" -Value "[.ShellClassInfo]`nCLSID={BD84B380-8CA2-1069-AB1D-08000948F534}"
+                            Set-Content "desktop.ini.bak" -Value "[.ShellClassInfo]`nCLSID={BD84B380-8CA2-1069-AB1D-08000948F534}"
                             # Add hidden system attrib for permission reasons
                             attrib +s +h desktop.ini
                             attrib +s +h desktop.ini.bak
@@ -110,7 +110,7 @@ Function Menu {
                             Set-Location "C:\Windows\Fonts"
                             # Create a new one with default view
                             New-Item -Name "desktop.ini" -ItemType "file"
-                            Add-Content "desktop.ini" -Value "[.ShellClassInfo]`nCLSID={BD84B380-8CA2-1069-AB1D-08000948F534}"
+                            Set-Content "desktop.ini" -Value "[.ShellClassInfo]`nCLSID={BD84B380-8CA2-1069-AB1D-08000948F534}"
                             Start-Process "explorer.exe"
                             # Add hidden system attrib for permission reasons
                             attrib +s +h desktop.ini
