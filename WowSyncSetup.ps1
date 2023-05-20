@@ -1,10 +1,10 @@
 <#
 .SYNOPSIS
-WoW Complete Sync
+WoW Sync Setup Helper
 
 .DESCRIPTION
-v1.0.3
-Sync your World of Warcraft Interface AddOns, WTF, and Fonts with git accounts.
+v1.0.0
+Helps you setup syncing your World of Warcraft Interface AddOns, WTF, and Fonts with git accounts.
 
 .LINK
 https://github.com/icedterminal/PS-Scripts
@@ -32,37 +32,47 @@ Right click this file and click "Run with PowerShell"
 
 # First move to the root of WoW. You may need to alter this path if you installed WoW somewhere else.
 Set-Location "C:\Program Files (x86)\World of Warcraft"
+write-host "If you have not already done so, create a repo with GitHub, GitLab, or Gitea."
+$origin = Read-Host -Prompt 'Enter the full URL to your git repo'
 
 # Then look through for different install versions.
-# You're going to have a branch for each version you have installed.
 Get-ChildItem -Path "_*_" | ForEach-Object {
-	# Once they are found, check the git status for untracked changes and files.
-	if (Set-Location $_ && git status | Select-String -Pattern "Changes not staged|Untracked files" ) {
+	# Once they are found, check the git status to make sure there isn't one there.
+	if (Set-Location $_ && git status | Select-String -Pattern "not a git repository" ) {
+		write-host "`nCreating a repo" -ForegroundColor Green
 		# Before pushing, a branch has to be specified. There is already a variable that collects this information: the path.
 		# The path must be converted to a string.
 		$path = Convert-Path $_
 		# Trim the path string down to the version using regex and use that as the branch to push to.
 		$branch = $path -replace '^[^_]*_|_+$',''
-		write-host "`nChanges for `"$branch`" found" -ForegroundColor Yellow
-		# Give the commit message the date and time. Easy to sort through.
-		$timestamp = Get-Date -Format G
-		# Add untracked files, if any. If you installed new addons this is a must.
+		# Create the branch
+		git init -b $branch --shared=false
+		# Ignore lots of stuff
+		Set-Content ".gitignore" -Value "# Don't upload these
+		Cache/
+		Errors/
+		Logs/
+		Screenshots/
+		Utils/
+		*.exe
+		*.dll"
+		# Set the end of file type
+		git config core.autocrlf false
+		# add all your files
 		git add .
-		# Add changes.
-		git commit -am "Auto sync at $timestamp"
-		# Add changes and sign. Do not use this one unless you have setup GPG.
-		#git commit -S -am "Auto sync at $timestamp"
-		# Push the commit.
+		# Commit them
+		git commit -am "Upload"
+		#git commit -S -am "Upload"
+		# Specify the origin which is what you set earlier with the URL
+		git remote add origin $origin
+		# Specify branch
+		git branch -M $branch
+		# Upload files
 		git push -u origin $branch
-		# Pause for a few seconds to review.
 		start-sleep 3
 	}
 	else {
-		# Again converting path to string and trimming.
-		# This time we just report no changes and close.
-		$path = Convert-Path $_
-		$branch = $path -replace '^[^_]*_|_+$',''
-		write-host "`nNo changes for `"$branch`"" -ForegroundColor Green
+		write-host "This location already has a git repo!" -ForegroundColor Red
 		# Pause for a few seconds to review.
 		start-sleep 3
 	}

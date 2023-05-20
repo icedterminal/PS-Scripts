@@ -3,7 +3,7 @@
 WoW Simple Sync
 
 .DESCRIPTION
-v1.0.2
+v1.0.3
 Sync just your World of Warcraft Toon Folder (WTF) with git accounts.
 
 .LINK
@@ -25,6 +25,10 @@ You can read more about how to use this script here: https://go.icedterminal.me/
 Right click this file and click "Run with PowerShell"
 
 #>
+
+# Check for admin.
+# If your WoW install is in a location where your user account does not freely have access to read/write, you need to uncomment the line below.
+#if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
 
 # First move to the root of WoW. You may need to alter this path if you installed WoW somewhere else.
 Set-Location "C:\Program Files (x86)\World of Warcraft"
