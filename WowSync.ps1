@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-WoW Sync
+WoW Complete Sync
 
 .DESCRIPTION
-v1.0.0
+v1.0.1
 Sync your World of Warcraft Interface AddOns, WTF, and Fonts with git accounts.
 
 .LINK
@@ -27,9 +27,10 @@ Right click this file and click "Run with PowerShell"
 #>
 
 # First move to the root of WoW. You may need to alter this path if you installed WoW somewhere else.
-Set-Location "C:\Program Files\World of Warcraft"
+Set-Location "C:\Program Files (x86)\World of Warcraft"
 
 # Then look through for different install versions.
+# You're going to have a branch for each version you have installed.
 Get-ChildItem -Path "_*_" | ForEach-Object {
 	# Once they are found, check the git status for untracked changes and files.
 	if (Set-Location $_ && git status | Select-String -Pattern "Changes not staged|Untracked files" ) {
@@ -38,14 +39,15 @@ Get-ChildItem -Path "_*_" | ForEach-Object {
 		$path = Convert-Path $_
 		# Trim the path string down to the version using regex and use that as the branch to push to.
 		$branch = $path -replace '^[^_]*_|_+$',''
-		write-host "`nChecking $branch"
-		write-host "Syncing..." -ForegroundColor Yellow
+		write-host "`nChanges for `"$branch`" found" -ForegroundColor Yellow
 		# Give the commit message the date and time. Easy to sort through.
 		$timestamp = Get-Date -Format G
-		# Add untracked files, if any.
+		# Add untracked files, if any. If you installed new addons this is a must.
 		git add .
 		# Add changes.
 		git commit -am "Auto sync at $timestamp"
+		# Add changes and sign. Do not use this one unless you have setup GPG.
+		#git commit -S -am "Auto sync at $timestamp"
 		# Push the commit.
 		git push -u origin $branch
 		# Pause for a few seconds to review.
@@ -56,8 +58,7 @@ Get-ChildItem -Path "_*_" | ForEach-Object {
 		# This time we just report no changes and close.
 		$path = Convert-Path $_
 		$branch = $path -replace '^[^_]*_|_+$',''
-		write-host "`nChecking $branch"
-		write-host "No changes" -ForegroundColor Green
+		write-host "`nNo changes for `"$branch`"" -ForegroundColor Green
 		# Pause for a few seconds to review.
 		start-sleep 3
 	}
