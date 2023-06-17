@@ -3,7 +3,7 @@
 WoW Complete Sync
 
 .DESCRIPTION
-v1.0.3
+v1.0.4
 Sync your World of Warcraft Interface AddOns, WTF, and Fonts with git accounts.
 
 .LINK
@@ -37,7 +37,7 @@ Set-Location "C:\Program Files (x86)\World of Warcraft"
 # You're going to have a branch for each version you have installed.
 Get-ChildItem -Path "_*_" | ForEach-Object {
 	# Once they are found, check the git status for untracked changes and files.
-	if (Set-Location $_ && git status | Select-String -Pattern "Changes not staged|Untracked files" ) {
+	if ((Set-Location $_) -and (git status) | Select-String -Pattern "Changes not staged|Untracked files" ) {
 		# Before pushing, a branch has to be specified. There is already a variable that collects this information: the path.
 		# The path must be converted to a string.
 		$path = Convert-Path $_
