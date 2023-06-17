@@ -28,7 +28,7 @@ Right click this file and click "Run with PowerShell"
 
 # Check for admin.
 # If your WoW install is in a location where your user account does not freely have access to read/write, you need to uncomment the line below.
-#if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
+#if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process pwsh.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
 
 # First move to the root of WoW. You may need to alter this path if you installed WoW somewhere else.
 Set-Location "C:\Program Files (x86)\World of Warcraft"

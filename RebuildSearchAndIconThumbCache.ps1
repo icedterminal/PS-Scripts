@@ -29,7 +29,7 @@ Right click this file and click "Run with PowerShell"
 #>
 
 # Check for admin
-if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
+if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process pwsh.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
 
 # Custom colors
 $Host.UI.RawUI.BackgroundColor = ($bckgrnd = 'Black')
@@ -92,7 +92,7 @@ Function Menu { clear-host
                     $yesno = $Host.UI.PromptForChoice($title, $question, $choice, 0)
                     if ($yesno -eq 0) {
                         bcdedit /set safeboot minimal >$null
-                        New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" -Name "*RebuildScript" -Value "powershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -PropertyType "STRING"  >$null 2>&1
+                        New-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\RunOnce" -Name "*RebuildScript" -Value "pwsh.exe -NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -PropertyType "STRING"  >$null 2>&1
                         $i = 10
                         do {
                             clear-host
