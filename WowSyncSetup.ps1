@@ -3,7 +3,7 @@
 WoW Sync Setup Helper
 
 .DESCRIPTION
-v1.0.1
+v1.0.2
 Helps you setup syncing your World of Warcraft Interface AddOns, WTF, and Fonts with git accounts.
 
 .LINK
@@ -38,7 +38,7 @@ $origin = Read-Host -Prompt 'Enter the full URL to your git repo'
 # Then look through for different install versions.
 Get-ChildItem -Path "_*_" | ForEach-Object {
 	# Once they are found, check the git status to make sure there isn't one there.
-	if ((Set-Location $_) -and (git status) | Select-String -Pattern "not a git repository" ) {
+	if (Set-Location $_ && git status | Select-String -Pattern "not a git repository" ) {
 		write-host "`nCreating a repo" -ForegroundColor Green
 		# Before pushing, a branch has to be specified. There is already a variable that collects this information: the path.
 		# The path must be converted to a string.
@@ -69,7 +69,11 @@ Get-ChildItem -Path "_*_" | ForEach-Object {
 		git branch -M $branch
 		# Upload files
 		git push -u origin $branch
-		start-sleep 3
+		# Due to the bnet launcher being programmed to set its own permissions, we have to make adjustments.
+		# Each time the bnet launcher starts it does a permissions check.
+		# If it can't manage permissions on something it throws a fit with "Update" loops. Sometimes it straight up fails.
+		# One such issue is read-only flags. They need to be cleared if git marks anything as such
+		dir ".git" -r * | ForEach-Object { attrib -r $_.FullName }
 	}
 	else {
 		write-host "This location already has a git repo!" -ForegroundColor Red
