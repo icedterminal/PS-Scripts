@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-WoW Complete Sync
+WoW Sync
 
 .DESCRIPTION
-v1.0.5
+v1.0.6
 Sync your World of Warcraft Interface AddOns, WTF, and Fonts with git accounts.
 
 .LINK
@@ -13,28 +13,21 @@ https://github.com/icedterminal/PS-Scripts
 While this script is clearly safe, if you download a file Windows may block it.
 You will need to unblock it if that's the case.
 Additionally, PowerShell blocks running scripts for safety. Run the command:
-	set-executionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine
-	set-executionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
-You can revert this change with the command:
-	set-executionPolicy -ExecutionPolicy Default -Scope LocalMachine
-	set-executionPolicy -ExecutionPolicy Default -Scope CurrentUser
+	set-executionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
+	set-executionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 You can read more about how to use this script here: https://go.icedterminal.me/wtf
 
 .EXAMPLE
-Right click this file and click "Run with PowerShell"
+Execute this script with a scheduled task on the process termination of wow.exe
 
 #>
 
-# Check for admin.
-# If your WoW install is in a location where your user account does not freely have access to read/write, you need to uncomment the line below.
-#if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) { Start-Process pwsh.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit }
-
 # First move to the root of WoW. You may need to alter this path if you installed WoW somewhere else.
 Set-Location "C:\Program Files (x86)\World of Warcraft"
-
+# Stop the launcher so it doesn't freak out when permissions are being dealt with later on.
+stop-process -name "Battle.net" | out-null
 # Then look through for different install versions.
-# You're going to have a branch for each version you have installed.
 Get-ChildItem -Path "_*_" | ForEach-Object {
 	# Once they are found, check the git status for untracked changes and files.
 	if (Set-Location $_ && git status | Select-String -Pattern "Changes not staged|Untracked files" ) {
@@ -43,29 +36,36 @@ Get-ChildItem -Path "_*_" | ForEach-Object {
 		$path = Convert-Path $_
 		# Trim the path string down to the version using regex and use that as the branch to push to.
 		$branch = $path -replace '^[^_]*_|_+$',''
-		write-host "`nChanges for `"$branch`" found" -ForegroundColor Yellow
+		write-host "`nChecking $branch"
+		write-host "Adding and committing files..." -ForegroundColor Yellow
 		# Give the commit message the date and time. Easy to sort through.
 		$timestamp = Get-Date -Format G
-		# Add untracked files, if any. If you installed new addons this is a must.
+		$tagtime = Get-Date -Format "dd-MM-yyyy_HH-mm-ss"
+		# Add untracked files, if any.
 		git add .
-		# Add changes.
-		git commit -am "Auto sync at $timestamp"
-		# Add changes and sign. Do not use this one unless you have setup GPG.
-		#git commit -S -am "Auto sync at $timestamp"
-		# Push the commit.
+		# Commit changes.
+		git commit -S -am "Auto commit for $branch at $timestamp"
+		# Push the commit to the correct branch.
 		git push -u origin $branch
-		# Due to the bnet launcher being programmed to set its own permissions, we have to make adjustments.
-		# Each time the bnet launcher starts it does a permissions check.
-		# If it can't manage permissions on something it throws a fit with "Update" loops. Sometimes it straight up fails.
-		# One such issue is read-only flags. They need to be cleared if git marks anything as such
+		# Tag the commit so you can simply download a zip at a later date.
+		git tag "$branch`_$tagtime"
+		# Push the tag
+		git push origin --tags
+		# Due to the bnet launcher being programmed to set its own permissions, need to make adjustments.
+		# Each time the bnet launcher starts it does a permissions check. If it can't manage permissions on something it throws a fit with "Update" loops.
+		# One such issue is read-only flags. Since git marks things has read-only to commit them, we have to unset it for next launch.
+		write-host "Processing permissions..." -ForegroundColor Yellow
 		dir ".git" -r * | ForEach-Object { attrib -r $_.FullName }
+		write-host "Complete!" -ForegroundColor Green
+		start-sleep 3
 	}
 	else {
 		# Again converting path to string and trimming.
 		# This time we just report no changes and close.
 		$path = Convert-Path $_
 		$branch = $path -replace '^[^_]*_|_+$',''
-		write-host "`nNo changes for `"$branch`"" -ForegroundColor Green
+		write-host "`nChecking $branch"
+		write-host "No changes" -ForegroundColor Green
 		# Pause for a few seconds to review.
 		start-sleep 3
 	}

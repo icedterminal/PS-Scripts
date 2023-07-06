@@ -20,8 +20,8 @@ https://go.icedterminal.me/acl#system-elevation
 While this script is clearly safe, if you download a file Windows may block it.
 You will need to unblock it if that's the case.
 Additionally, PowerShell blocks running scripts for safety. Run the command:
-	set-executionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine
-	set-executionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser
+	set-executionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine
+	set-executionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 You can revert this change with the command:
 	set-executionPolicy -ExecutionPolicy Default -Scope LocalMachine
 	set-executionPolicy -ExecutionPolicy Default -Scope CurrentUser
