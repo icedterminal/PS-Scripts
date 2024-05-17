@@ -33,7 +33,7 @@ Write-Host "Please wait while a system restore point is created."
 Checkpoint-Computer -Description "Remove Apps Script"
 Write-Host "Press any key to continue"
 Read-Host
-$BloatApps = "3d|alarms|feedback|getstarted|windowscommunicationsapps|maps|messaging|mixedreality|officehub|onenote|onedrivesync|mspaint|people|skype|todo|wallet|weather|WebExperience|Clipchamp|yourphone|zune|teams|news"
+$BloatApps = "549981C3F5F10|Alarms|BingNews|BingWeather|CrossDevice|GamingApp|Clipchamp|DevHome|MicrosoftOfficeHub|MicrosoftSolitaireCollection|MicrosoftStickyNotes|MicrosoftTeams|OutlookForWindows|People|Photos|PowerAutomateDesktop|Todos|WindowsAlarms|windowscommunicationsapps|WindowsFeedbackHub|WindowsMaps|WindowsSoundRecorder|TCUI|XboxGameOverlay|XboxGamingOverlay|XboxIdentityProvider|XboxSpeechToTextOverlay|YourPhone|ZuneMusic|ZuneVideo|MicrosoftFamily|QuickAssist|WebExperience"
 $RemoveApps = Get-AppxPackage -allusers | where-object {$_.name -match $BloatApps}
 $RemovePrApps = Get-AppxProvisionedPackage -online | where-object {$_.displayname -match $BloatApps}
 ForEach ($RemovedApp in $RemoveApps) {
